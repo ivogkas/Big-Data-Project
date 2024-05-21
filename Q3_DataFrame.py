@@ -75,15 +75,9 @@ income_df = income_df.withColumn(
 )
 
 crimes_2015_df = crimes_df.filter((year(col("DATE OCC")) == 2015) & (col("Vict Age") > 0) &
-                                   (col("Vict Descent").isin ("A", "B", "C", "D", "F", "G", "H", "I", "J", "K", "L", "O", "P", "S", "U", "V", "W", "X", "Z")) &
-                                    (col("Vict Descent").isNotNull()))
+                                   (col("Vict Descent").isin ("A", "B", "C", "D", "F", "G", "H", "I", "J", "K", "L", "O", "P", "S", "U", "V", "W", "X", "Z")))
 
-#geocoding_df = geocoding_df.dropDuplicates(["LAT", "LON"])
 geocoding_df = geocoding_df.withColumn("code", substring(col("ZIPcode"), 1, 5))
-
-#top_3_income_df = income_df.orderBy(col("Estimated Median Income").desc()).limit(3)
-
-#bottom_3_income_df = income_df.orderBy(col("Estimated Median Income").asc()).limit(3)
 
 joined_df = crimes_2015_df.join(geocoding_df, on=["LAT", "LON"], how="inner") \
     .select("LAT", "LON", "DATE OCC", "Vict Descent", "code") \
@@ -109,24 +103,23 @@ joined_df = crimes_2015_df.join(geocoding_df, on=["LAT", "LON"], how="inner") \
                 .when(col("Vict Descent") == "X", "Unknown")
                 )
 
+top_3_income = income_df.join(joined_df, joined_df["code"] == income_df['Zip Code'], how="left_semi") \
+    .orderBy(col("Estimated Median Income").desc()).limit(3).select("Zip Code")
 
-top_3_by_zip_df = joined_df.join(income_df, joined_df["code"] == income_df['Zip Code'], how="inner") \
-    .dropDuplicates(["code"]).orderBy(col("Estimated Median Income").desc()).limit(3).select("code")
+bottom_3_income = income_df.join(joined_df, joined_df["code"] == income_df['Zip Code'], how="left_semi") \
+    .orderBy(col("Estimated Median Income").asc()).limit(3).select("Zip Code")
 
-bottom_3_by_zip_df = joined_df.join(income_df, joined_df["code"] == income_df['Zip Code'], how="inner") \
-    .dropDuplicates(["code"]).orderBy(col("Estimated Median Income").asc()).limit(3).select("code")
-
-top_3 = joined_df.join(top_3_by_zip_df, joined_df["code"] == top_3_by_zip_df['code'], how="inner") \
+total_victims_top_3 = joined_df.join(top_3_income, joined_df["code"] == top_3_income['Zip Code'], how="inner") \
     .groupBy("Vict Descent").agg(count("*").alias("total_victims")).orderBy(col("total_victims").desc())
 
-bottom_3 = joined_df.join(bottom_3_by_zip_df, joined_df["code"] == bottom_3_by_zip_df['code'], how="inner") \
+total_victims_bottom_3 = joined_df.join(bottom_3_income, joined_df["code"] == bottom_3_income['Zip Code'], how="inner") \
     .groupBy("Vict Descent").agg(count("*").alias("total_victims")).orderBy(col("total_victims").desc())
 
 
 
 # βλέπω πως εκτελούνται τα joins
-joined_df.explain()
+
 #bottom_3_df.explain()
 #top_3_df.explain()
-print(top_3.show())
-print(bottom_3.show())
+print(total_victims_top_3.show())
+print(total_victims_bottom_3.show())
