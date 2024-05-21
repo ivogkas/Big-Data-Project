@@ -20,12 +20,9 @@ crimes_df2 = spark.read.parquet(parquet_path_2)
 df = crimes_df1.union(crimes_df2)
 
 # convert columns to DateType
-df = df.withColumn("Date Rptd", to_date("Date Rptd", "MM/dd/yyyy hh:mm:ss a"))
-df = df.withColumn("DATE OCC", to_date("DATE OCC", "MM/dd/yyyy hh:mm:ss a"))
-
-df = df.withColumn("year", year("DATE OCC"))
-df = df.withColumn("month", month("DATE OCC"))
-
+df = df.withColumn("DATE OCC", to_date("DATE OCC", "MM/dd/yyyy hh:mm:ss a"))\
+    .withColumn("year", year("DATE OCC"))\
+    .withColumn("month", month("DATE OCC"))
 
 # Create a temporary SQL view
 df.createOrReplaceTempView("crimes")
