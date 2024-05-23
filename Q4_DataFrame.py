@@ -86,8 +86,8 @@ crime_df = crime_df.filter(
 joined_df = crime_df.join(LAPD_df, crime_df["AREA"] == LAPD_df['PREC'], how="inner")
 
 joined_df = joined_df.withColumn("distance", get_distance(joined_df["LAT"], joined_df["LON"], joined_df["y"], joined_df["x"])) \
-    .groupBy("DIVISION").agg(round(avg("distance"), 2).alias("average_distance"), count("*").alias("incidents total")) \
-    .orderBy("incidents total")
+    .groupBy("DIVISION").agg(round(avg("distance"), 3).alias("average_distance"), count("*").alias("incidents total")) \
+    .orderBy("incidents total", ascending=False)
 
 print(joined_df.show(21))
 
