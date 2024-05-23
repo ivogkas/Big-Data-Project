@@ -4,7 +4,7 @@ from pyspark.sql.functions import col, count, month, year, rank, substring, when
 
 spark = SparkSession \
     .builder \
-    .appName("Query 3 DataFrame csv") \
+    .appName("Query 3 DataFrame optimizer") \
     .getOrCreate()
 
 
