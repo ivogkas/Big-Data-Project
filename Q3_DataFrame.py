@@ -123,3 +123,5 @@ total_victims_bottom_3 = joined_df.join(bottom_3_income, joined_df["code"] == bo
 #top_3_df.explain()
 print(total_victims_top_3.show())
 print(total_victims_bottom_3.show())
+
+spark.stop()
