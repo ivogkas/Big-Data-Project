@@ -2,7 +2,7 @@ import geopy.distance
 from pyspark.sql.functions import udf
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructField, StructType, IntegerType, FloatType, StringType
-from pyspark.sql.functions import col, count, month, year, rank, substring, when, hour, avg
+from pyspark.sql.functions import count, round,  avg
 
 @udf(returnType=FloatType())
 def get_distance(lat1, long1, lat2, long2):
@@ -88,7 +88,6 @@ joined_df = crime_df.join(LAPD_df, crime_df["AREA"] == LAPD_df['PREC'], how="inn
 joined_df = joined_df.withColumn("distance", get_distance(joined_df["LAT"], joined_df["LON"], joined_df["y"], joined_df["x"])) \
     .groupBy("DIVISION").agg(round(avg("distance"), 2).alias("average_distance"), count("*").alias("incidents total")) \
     .orderBy("incidents total")
-
 
 print(joined_df.show(21))
 
