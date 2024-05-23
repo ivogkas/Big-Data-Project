@@ -11,7 +11,7 @@ def get_distance(lat1, long1, lat2, long2):
 
 spark = SparkSession \
     .builder \
-    .appName("Query 2 DataFrame csv") \
+    .appName("Query 4 DataFrame") \
     .getOrCreate()
 
 
