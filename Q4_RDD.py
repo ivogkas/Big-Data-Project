@@ -18,7 +18,7 @@ def custom_csv_split(line):
 
 
 crimes1 = spark.textFile("Crime_Data_from_2010.csv") \
-    .map(custom_csv_split) 
+    .map(custom_csv_split)
 
 crimes2 = spark.textFile("Crime_Data_from_2020.csv") \
     .map(custom_csv_split)
@@ -54,3 +54,5 @@ joined_rdd = joined_rdd.map(lambda x: (
     .sortBy(lambda x: x[1][1], ascending=False)
 
 print(joined_rdd.take(21))
+
+spark.stop()
