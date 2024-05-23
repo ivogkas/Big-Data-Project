@@ -130,3 +130,5 @@ def optimize_joins(method):
 
 # BROADCAST, MERGE, SHUFFLE_HASH,SHUFFLE_REPLICATE_NL
 optimize_joins("merge")
+
+spark.stop()
