@@ -74,7 +74,7 @@ income_df = income_df.withColumn(
     regexp_replace(col("Estimated Median Income"), "[$,]", "").cast("int")
 )
 
-crimes_2015_df = crimes_df.filter((year(col("DATE OCC")) == 2015) & (col("Vict Age") > 0) &
+crimes_2015_df = crimes_df.filter((year(col("DATE OCC")) == 2015) &
                                    (col("Vict Descent").isin ("A", "B", "C", "D", "F", "G", "H", "I", "J", "K", "L", "O", "P", "S", "U", "V", "W", "X", "Z")))
 
 geocoding_df = geocoding_df.withColumn("code", substring(col("ZIPcode"), 1, 5))

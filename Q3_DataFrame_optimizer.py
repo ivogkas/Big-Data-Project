@@ -1,6 +1,7 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructField, StructType, IntegerType, FloatType, StringType, DateType
 from pyspark.sql.functions import col, count, month, year, rank, substring, when, hour, regexp_replace, to_date
+import sys
 
 spark = SparkSession \
     .builder \
@@ -74,13 +75,18 @@ income_df = income_df.withColumn(
     regexp_replace(col("Estimated Median Income"), "[$,]", "").cast("int")
 )
 
-crimes_2015_df = crimes_df.filter((year(col("DATE OCC")) == 2015) & (col("Vict Age") > 0) &
-                                   (col("Vict Descent").isin ("A", "B", "C", "D", "F", "G", "H", "I", "J", "K", "L", "O", "P", "S", "U", "V", "W", "X", "Z")))
+crimes_2015_df = crimes_df.filter((year(col("DATE OCC")) == 2015) &
+                                   (col("Vict Descent").isin("A", "B", "C", "D", "F", "G", "H", "I", "J", "K", "L", "O", "P", "S", "U", "V", "W", "X", "Z")))
 
 geocoding_df = geocoding_df.withColumn("code", substring(col("ZIPcode"), 1, 5))
 
 def optimize_joins(method):
-    joined_df = crimes_2015_df.join(geocoding_df.hint(method), on=["LAT", "LON"], how="inner") \
+    global crimes_2015_df, geocoding_df, income_df
+    geocoding_df = geocoding_df.hint(method)
+    income_df = income_df.hint(method)
+    crimes_2015_df = crimes_2015_df.hint(method)
+
+    joined_df = crimes_2015_df.join(geocoding_df, on=["LAT", "LON"], how="inner") \
         .select("LAT", "LON", "DATE OCC", "Vict Descent", "code") \
         .withColumn("Vict Descent",
                     when(col("Vict Descent") == "A", "Other Asian")
@@ -102,20 +108,19 @@ def optimize_joins(method):
                     .when(col("Vict Descent") == "W", "White")
                     .when(col("Vict Descent") == "Z", "Asian Indian")
                     .when(col("Vict Descent") == "X", "Unknown")
-                    )
+                    ).hint(method)
 
-    top_3_income = income_df.join(joined_df.hint(method), joined_df["code"] == income_df['Zip Code'], how="left_semi") \
-        .orderBy(col("Estimated Median Income").desc()).limit(3).select("Zip Code")
+    top_3_income = income_df.join(joined_df, joined_df["code"] == income_df['Zip Code'], how="left_semi") \
+        .orderBy(col("Estimated Median Income").desc()).limit(3).select("Zip Code").hint(method)
 
-    bottom_3_income = income_df.join(joined_df.hint(method), joined_df["code"] == income_df['Zip Code'], how="left_semi") \
-        .orderBy(col("Estimated Median Income").asc()).limit(3).select("Zip Code")
+    bottom_3_income = income_df.join(joined_df, joined_df["code"] == income_df['Zip Code'], how="left_semi") \
+        .orderBy(col("Estimated Median Income").asc()).limit(3).select("Zip Code").hint(method)
 
-    total_victims_top_3 = joined_df.join(top_3_income.hint(method), joined_df["code"] == top_3_income['Zip Code'], how="inner") \
+    total_victims_top_3 = joined_df.join(top_3_income, joined_df["code"] == top_3_income['Zip Code'], how="inner") \
         .groupBy("Vict Descent").agg(count("*").alias("total_victims")).orderBy(col("total_victims").desc())
 
-    total_victims_bottom_3 = joined_df.join(bottom_3_income.hint(method), joined_df["code"] == bottom_3_income['Zip Code'], how="inner") \
+    total_victims_bottom_3 = joined_df.join(bottom_3_income, joined_df["code"] == bottom_3_income['Zip Code'], how="inner") \
         .groupBy("Vict Descent").agg(count("*").alias("total_victims")).orderBy(col("total_victims").desc())
-
 
 
     # βλέπω πως εκτελούνται τα joins
@@ -129,6 +134,7 @@ def optimize_joins(method):
 
 
 # BROADCAST, MERGE, SHUFFLE_HASH,SHUFFLE_REPLICATE_NL
-optimize_joins("merge")
+method = sys.argv[1]
+optimize_joins(method)
 
 spark.stop()
