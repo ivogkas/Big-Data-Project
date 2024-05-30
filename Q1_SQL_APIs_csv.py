@@ -1,7 +1,6 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructField, StructType, IntegerType, FloatType, StringType
-from pyspark.sql.functions import to_date
-from pyspark.sql.functions import col, count, month, year, rank, substring
+from pyspark.sql.functions import col, count, month, year, rank, substring, to_date
 
 spark = SparkSession \
     .builder \
