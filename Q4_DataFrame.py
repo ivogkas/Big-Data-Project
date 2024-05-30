@@ -1,13 +1,19 @@
-import geopy.distance
-from pyspark.sql.functions import udf
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructField, StructType, IntegerType, FloatType, StringType
 from pyspark.sql.functions import count, round,  avg
+import math
 
-@udf(returnType=FloatType())
+
 def get_distance(lat1, long1, lat2, long2):
-    return geopy.distance.geodesic((lat1, long1), (lat2, long2)).km
+    lat1, long1, lat2, long2 = map(float, [lat1, long1, lat2, long2])
+    lat1, long1, lat2, long2 = map(math.radians, [lat1, long1, lat2, long2])
 
+    dlat = lat2 - lat1
+    dlon = long2 - long1
+    a = math.sin(dlat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
+    c = 2 * math.asin(math.sqrt(a))
+    r = 6371.0
+    return c * r
 
 spark = SparkSession \
     .builder \
@@ -90,5 +96,18 @@ joined_df = joined_df.withColumn("distance", get_distance(joined_df["LAT"], join
     .orderBy("incidents total", ascending=False)
 
 print(joined_df.show(21))
+data = joined_df.collect()
+
+with open("Q4_RDD.txt", 'w') as new_file:
+    for d in data:
+        resdata = ""
+        for x in d:
+            if type(x) == list or type(x) == tuple:
+                for t in x:
+                    resdata += str(t) + ", "
+            else:
+                resdata += str(x) + ", "
+        resdata += "\n"
+        new_file.write(resdata)
 
 spark.stop()
