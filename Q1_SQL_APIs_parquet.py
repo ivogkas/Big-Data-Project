@@ -19,14 +19,12 @@ crimes_df2 = spark.read.parquet(parquet_path_2)
 
 df = crimes_df1.union(crimes_df2)
 
-# convert columns to DateType
 df = df.withColumn("DATE OCC", to_date("DATE OCC", "MM/dd/yyyy hh:mm:ss a"))\
     .withColumn("year", year("DATE OCC"))\
     .withColumn("month", month("DATE OCC"))
 
-# Create a temporary SQL view
+# SQL view
 df.createOrReplaceTempView("crimes")
-#df.registerTempTable("crimes")
 
 query = "WITH ranked_months AS ( \
         SELECT year, month, COUNT(*) AS crime_total, ROW_NUMBER() OVER (PARTITION BY year ORDER BY COUNT(*) DESC) AS ranking \
@@ -39,11 +37,8 @@ query = "WITH ranked_months AS ( \
         ORDER BY year ASC, crime_total DESC;"
 
 
-# Execute the SQL query
 result = spark.sql(query)
 
-# Show the results
 result.show()
 
-# Stop the Spark session
 spark.stop()
