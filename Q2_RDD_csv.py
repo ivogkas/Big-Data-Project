@@ -2,7 +2,7 @@ from pyspark.sql import SparkSession
 import csv
 import io
 
-sc = SparkSession \
+spark = SparkSession \
     .builder \
     .appName("Q2_RDD_csv") \
     .getOrCreate() \
@@ -15,15 +15,11 @@ def custom_csv_split(line):
     return next(reader)
 
 
-crimes1 = sc.textFile("Crime_Data_from_2010.csv") \
+crimes1 = spark.textFile("Crime_Data_from_2010.csv") \
             .map(custom_csv_split)
 
-crimes2 = sc.textFile("Crime_Data_from_2020.csv") \
+crimes2 = spark.textFile("Crime_Data_from_2020.csv") \
             .map(custom_csv_split)
-
-
-# Extract and remove header in one step for crimes1
-#header1 = crimes1.first()
 
 crimes_rdd = crimes1.union(crimes2)
 
@@ -39,16 +35,15 @@ def classify_timeslot(x):
         return 'Νύχτα: 9.00μμ – 4.59πμ'
 
 
-rdd = crimes_rdd.filter(lambda x : x[15] == "STREET") \
+rdd = crimes_rdd.filter(lambda x: x[15] == "STREET") \
     .map(classify_timeslot) \
     .map(lambda timeslot: (timeslot, 1)) \
     .reduceByKey(lambda a, b: a + b) \
     .sortBy(lambda x: x[1], ascending=False)
 
+print(rdd.collect())
 
-print(rdd.take(4))
-
-sc.stop()
+spark.stop()
 
 
 
