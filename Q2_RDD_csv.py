@@ -8,6 +8,7 @@ spark = SparkSession \
     .getOrCreate() \
     .sparkContext
 
+
 def custom_csv_split(line):
     reader = csv.reader(io.StringIO(line), delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
     return next(reader)
@@ -42,7 +43,3 @@ rdd = crimes_rdd.filter(lambda x: x[15] == "STREET") \
 print(rdd.collect())
 
 spark.stop()
-
-
-
-
