@@ -55,10 +55,10 @@ def get_distance(lat1, long1, lat2, long2):
 dataset = crimes_rdd_formatted.union(LAPD_rdd_formatted) \
     .groupByKey().flatMapValues(lambda x: arrange(x)) \
     .map(lambda x: (
-      x[0],
-      x[1][0],
-      x[1][1],
-      get_distance(x[1][0][1], x[1][0][2], x[1][1][2], x[1][1][1]))) \
+       x[0],
+       x[1][0],
+       x[1][1],
+       get_distance(x[1][0][1], x[1][0][2], x[1][1][2], x[1][1][1]))) \
     .map(lambda x: ([x[2][0], (x[3], 1)])) \
     .reduceByKey(lambda a, b: (a[0] + b[0], a[1] + b[1])) \
     .mapValues(lambda x: (round(x[0] / x[1], 3), x[1])) \

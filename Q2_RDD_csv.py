@@ -39,7 +39,6 @@ def classify_timeslot(x):
         return 'Νύχτα: 9.00μμ – 4.59πμ'
 
 
-
 rdd = crimes_rdd.filter(lambda x : x[15] == "STREET") \
     .map(classify_timeslot) \
     .map(lambda timeslot: (timeslot, 1)) \
