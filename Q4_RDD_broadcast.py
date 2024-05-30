@@ -1,19 +1,17 @@
 from pyspark.sql import SparkSession
 import csv
 import io
-import geopy.distance
+import math
 
 spark = SparkSession \
     .builder \
-    .appName("Q4_RDD_csv") \
+    .appName("Q4_RDD_broadcast") \
     .getOrCreate() \
     .sparkContext
 
 
 def custom_csv_split(line):
-    # Create a CSV reader with custom settings
     reader = csv.reader(io.StringIO(line), delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    # Extract elements
     return next(reader)
 
 
@@ -38,18 +36,23 @@ LAPD_rdd_formatted = LAPD_rdd.map(lambda x: [int(x[3]), [x[1], x[4], x[5]]])
 
 broadcasted_LAPD_rdd = spark.broadcast(LAPD_rdd_formatted.keyBy(lambda x: x[0]).collectAsMap()) # dictionary
 
-#print(broadcasted_LAPD_rdd.value)
 broadcast_value = broadcasted_LAPD_rdd.value
 
 joined_rdd = crimes_rdd_formatted.map(lambda x: [x[0], [x[1], broadcast_value.get(x[0])]])
-#print(joined_rdd.take(3))
-# joined_rdd = crimes_rdd_formatted.join(LAPD_rdd_formatted)
-#
-#
+
+
 def get_distance(lat1, long1, lat2, long2):
-     return geopy.distance.geodesic((lat1, long1), (lat2, long2)).km
-#
-#
+    lat1, long1, lat2, long2 = map(float, [lat1, long1, lat2, long2])
+    lat1, long1, lat2, long2 = map(math.radians, [lat1, long1, lat2, long2])
+
+    dlat = lat2 - lat1
+    dlon = long2 - long1
+    a = math.sin(dlat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
+    c = 2 * math.asin(math.sqrt(a))
+    r = 6371.0
+    return c * r
+
+
 joined_rdd = joined_rdd.map(lambda x: (
       x[0],
       x[1][0],
@@ -61,5 +64,18 @@ joined_rdd = joined_rdd.map(lambda x: (
       .sortBy(lambda x: x[1][1], ascending=False)
 
 print(joined_rdd.take(21))
+data = joined_rdd.collect()
+
+with open("Q4_RDD_broadcast.txt", 'w') as new_file:
+    for d in data:
+        resdata = ""
+        for x in d:
+            if type(x) == list or type(x) == tuple:
+                for t in x:
+                    resdata += str(t) + ", "
+            else:
+                resdata += str(x) + ", "
+        resdata += "\n"
+        new_file.write(resdata)
 
 spark.stop()

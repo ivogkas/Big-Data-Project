@@ -1,19 +1,17 @@
 from pyspark.sql import SparkSession
 import csv
 import io
-import geopy.distance
+import math
 
 spark = SparkSession \
     .builder \
-    .appName("Q4_RDD_csv") \
+    .appName("Q4_RDD_repartition") \
     .getOrCreate() \
     .sparkContext
 
 
 def custom_csv_split(line):
-    # Create a CSV reader with custom settings
     reader = csv.reader(io.StringIO(line), delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    # Extract elements
     return next(reader)
 
 
@@ -49,7 +47,15 @@ def arrange(seq):
 
 
 def get_distance(lat1, long1, lat2, long2):
-    return geopy.distance.geodesic((lat1, long1), (lat2, long2)).km
+    lat1, long1, lat2, long2 = map(float, [lat1, long1, lat2, long2])
+    lat1, long1, lat2, long2 = map(math.radians, [lat1, long1, lat2, long2])
+
+    dlat = lat2 - lat1
+    dlon = long2 - long1
+    a = math.sin(dlat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
+    c = 2 * math.asin(math.sqrt(a))
+    r = 6371.0
+    return c * r
 
 
 dataset = crimes_rdd_formatted.union(LAPD_rdd_formatted) \
@@ -64,4 +70,19 @@ dataset = crimes_rdd_formatted.union(LAPD_rdd_formatted) \
     .mapValues(lambda x: (round(x[0] / x[1], 3), x[1])) \
     .sortBy(lambda x: x[1][1], ascending=False)
 
-print(dataset.take(5))
+print(dataset.take(21))
+data = dataset.collect()
+
+with open("Q4_RDD_repartition.txt", 'w') as new_file:
+    for d in data:
+        resdata = ""
+        for x in d:
+            if type(x) == list or type(x) == tuple:
+                for t in x:
+                    resdata += str(t) + ", "
+            else:
+                resdata += str(x) + ", "
+        resdata += "\n"
+        new_file.write(resdata)
+
+spark.stop()
