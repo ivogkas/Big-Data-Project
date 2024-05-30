@@ -9,9 +9,7 @@ spark = SparkSession \
     .sparkContext
 
 def custom_csv_split(line):
-    # Create a CSV reader with custom settings
     reader = csv.reader(io.StringIO(line), delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    # Extract elements
     return next(reader)
 
 
