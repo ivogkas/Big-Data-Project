@@ -56,7 +56,6 @@ df = df.withColumn("DATE OCC", to_date("DATE OCC", "MM/dd/yyyy hh:mm:ss a")) \
     .withColumn("year", year("DATE OCC")) \
     .withColumn("month", month("DATE OCC"))
 
-
 # SQL view
 df.createOrReplaceTempView("crimes")
 
