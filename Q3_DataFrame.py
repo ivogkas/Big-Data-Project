@@ -71,8 +71,7 @@ crimes_df = crimes_df.withColumn("DATE OCC", to_date("DATE OCC", "MM/dd/yyyy hh:
 
 income_df = income_df.withColumn(
     "Estimated Median Income",
-    regexp_replace(col("Estimated Median Income"), "[$,]", "").cast("int")
-)
+    regexp_replace(col("Estimated Median Income"), "[$,]", "").cast("int"))
 
 crimes_2015_df = crimes_df.filter((year(col("DATE OCC")) == 2015) &
                                    (col("Vict Descent").isin ("A", "B", "C", "D", "F", "G", "H", "I", "J", "K", "L", "O", "P", "S", "U", "V", "W", "X", "Z")))
@@ -115,12 +114,6 @@ total_victims_top_3 = joined_df.join(top_3_income, joined_df["code"] == top_3_in
 total_victims_bottom_3 = joined_df.join(bottom_3_income, joined_df["code"] == bottom_3_income['Zip Code'], how="inner") \
     .groupBy("Vict Descent").agg(count("*").alias("total_victims")).orderBy(col("total_victims").desc())
 
-
-
-# βλέπω πως εκτελούνται τα joins
-
-#bottom_3_df.explain()
-#top_3_df.explain()
 print(total_victims_top_3.show())
 print(total_victims_bottom_3.show())
 
