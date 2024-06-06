@@ -1,9 +1,10 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructField, StructType, IntegerType, FloatType, StringType
-from pyspark.sql.functions import count, round,  avg
+from pyspark.sql.functions import count, round,  avg, udf
 import math
 
 
+@udf(FloatType())
 def get_distance(lat1, long1, lat2, long2):
     lat1, long1, lat2, long2 = map(float, [lat1, long1, lat2, long2])
     lat1, long1, lat2, long2 = map(math.radians, [lat1, long1, lat2, long2])
@@ -14,6 +15,7 @@ def get_distance(lat1, long1, lat2, long2):
     c = 2 * math.asin(math.sqrt(a))
     r = 6371.0
     return c * r
+
 
 spark = SparkSession \
     .builder \
@@ -64,12 +66,12 @@ LAPD_schema = StructType([
 
 
 crimes_df1 = spark.read.format('csv') \
-    .options(header=True, inferSchema=False) \
+    .options(header=False, inferSchema=False, skipFirstRow=True) \
     .schema(crimes_schema) \
     .load("Crime_Data_from_2010.csv")
 
 crimes_df2 = spark.read.format('csv') \
-    .options(header=True, inferSchema=False) \
+    .options(header=False, inferSchema=False, skipFirstRow=True) \
     .schema(crimes_schema) \
     .load("Crime_Data_from_2020.csv")
 
