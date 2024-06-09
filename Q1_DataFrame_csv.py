@@ -66,4 +66,18 @@ monthly_crime_counts = df.groupBy("year", "month") \
 
 monthly_crime_counts.show()
 
+data = monthly_crime_counts.collect()
+
+with open("Q1_DataFrame_csv.txt", 'w') as new_file:
+    for d in data:
+        resdata = ""
+        for x in d:
+            if type(x) == list or type(x) == tuple:
+                for t in x:
+                    resdata += str(t) + ", "
+            else:
+                resdata += str(x) + ", "
+        resdata += "\n"
+        new_file.write(resdata)
+
 spark.stop()
