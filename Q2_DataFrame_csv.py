@@ -64,4 +64,18 @@ crime_timeslots = df.filter(df['Premis Desc'] == 'STREET') \
 
 crime_timeslots.show()
 
+data = crime_timeslots.collect()
+
+with open("Q2_DataFrame_csv.txt", 'w') as new_file:
+    for d in data:
+        resdata = ""
+        for x in d:
+            if type(x) == list or type(x) == tuple:
+                for t in x:
+                    resdata += str(t) + ", "
+            else:
+                resdata += str(x) + ", "
+        resdata += "\n"
+        new_file.write(resdata)
+
 spark.stop()

@@ -42,4 +42,18 @@ rdd = crimes_rdd.filter(lambda x: x[15] == "STREET") \
 
 print(rdd.collect())
 
+data = rdd.collect()
+
+with open("Q2_RDD_csv.txt", 'w') as new_file:
+    for d in data:
+        resdata = ""
+        for x in d:
+            if type(x) == list or type(x) == tuple:
+                for t in x:
+                    resdata += str(t) + ", "
+            else:
+                resdata += str(x) + ", "
+        resdata += "\n"
+        new_file.write(resdata)
+
 spark.stop()

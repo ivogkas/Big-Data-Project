@@ -102,7 +102,7 @@ joined_df = crimes_2015_df.join(geocoding_df, on=["LAT", "LON"], how="inner") \
                 .when(col("Vict Descent") == "X", "Unknown")
                 )
 
-top_3_income = income_df.join(joined_df, joined_df["code"] == income_df['Zip Code'], how="left_semi") \
+top_3_income = joined_df.join(income_df, joined_df["code"] == income_df['Zip Code'], how="left_semi") \
     .orderBy(col("Estimated Median Income").desc()).limit(3).select("Zip Code")
 
 bottom_3_income = income_df.join(joined_df, joined_df["code"] == income_df['Zip Code'], how="left_semi") \
@@ -116,5 +116,27 @@ total_victims_bottom_3 = joined_df.join(bottom_3_income, joined_df["code"] == bo
 
 print(total_victims_top_3.show())
 print(total_victims_bottom_3.show())
+
+together = total_victims_top_3.union(total_victims_bottom_3)
+data = together.collect()
+
+with open("Q3_Dataframe.txt", 'w') as new_file:
+    for d in data:
+        resdata = ""
+        for x in d:
+            if type(x) == list or type(x) == tuple:
+                for t in x:
+                    resdata += str(t) + ", "
+            else:
+                resdata += str(x) + ", "
+        resdata += "\n"
+        new_file.write(resdata)
+
+# physical plans
+#joined_df.explain()
+#top_3_income.explain()
+#bottom_3_income.explain()
+#total_victims_top_3.explain()
+#total_victims_bottom_3.explain()
 
 spark.stop()

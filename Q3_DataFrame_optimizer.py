@@ -80,6 +80,7 @@ crimes_2015_df = crimes_df.filter((year(col("DATE OCC")) == 2015) &
 
 geocoding_df = geocoding_df.withColumn("code", substring(col("ZIPcode"), 1, 5))
 
+
 def optimize_joins(method):
     global crimes_2015_df, geocoding_df, income_df
     geocoding_df = geocoding_df.hint(method)
@@ -122,15 +123,30 @@ def optimize_joins(method):
     total_victims_bottom_3 = joined_df.join(bottom_3_income, joined_df["code"] == bottom_3_income['Zip Code'], how="inner") \
         .groupBy("Vict Descent").agg(count("*").alias("total_victims")).orderBy(col("total_victims").desc())
 
-
-    # βλέπω πως εκτελούνται τα joins
-    joined_df.explain()
-    top_3_income.explain()
-    bottom_3_income.explain()
-    total_victims_top_3.explain()
-    total_victims_bottom_3.explain()
     print(total_victims_top_3.show())
     print(total_victims_bottom_3.show())
+
+    together = total_victims_top_3.union(total_victims_bottom_3)
+    data = together.collect()
+
+    with open("Q3_Dataframe_" + str(method) + ".txt", 'w') as new_file:
+        for d in data:
+            resdata = ""
+            for x in d:
+                if type(x) == list or type(x) == tuple:
+                    for t in x:
+                        resdata += str(t) + ", "
+                else:
+                    resdata += str(x) + ", "
+            resdata += "\n"
+            new_file.write(resdata)
+
+    # physical plans
+    # joined_df.explain()
+    # top_3_income.explain()
+    # bottom_3_income.explain()
+    # total_victims_top_3.explain()
+    # total_victims_bottom_3.explain()
 
 
 # BROADCAST, MERGE, SHUFFLE_HASH,SHUFFLE_REPLICATE_NL
