@@ -55,17 +55,17 @@ geocoding_schema = StructType([
 crimes_df = spark.read.format('csv') \
     .options(header=True, inferSchema=False) \
     .schema(crimes_schema) \
-    .load("Crime_Data_from_2010.csv")
+    .load("hdfs://master:9000/home/user/project2024/crime_data_2010_2019.csv")
 
 income_df = spark.read.format('csv') \
     .options(header=True, inferSchema=False) \
     .schema(income_2015_schema) \
-    .load("LA_income_2015.csv")
+    .load("hdfs://master:9000/home/user/project2024/income/LA_income_2015.csv")
 
 geocoding_df = spark.read.format('csv') \
     .options(header=True, inferSchema=False) \
     .schema(geocoding_schema) \
-    .load("revgecoding.csv")
+    .load("hdfs://master:9000/home/user/project2024/revgecoding.csv")
 
 crimes_df = crimes_df.withColumn("DATE OCC", to_date("DATE OCC", "MM/dd/yyyy hh:mm:ss a"))
 
