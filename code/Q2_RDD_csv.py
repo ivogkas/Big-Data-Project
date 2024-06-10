@@ -14,10 +14,10 @@ def custom_csv_split(line):
     return next(reader)
 
 
-crimes1 = spark.textFile("Crime_Data_from_2010.csv") \
+crimes1 = spark.textFile("hdfs://master:9000/home/user/project2024/crime_data_2010_2019.csv") \
             .map(custom_csv_split)
 
-crimes2 = spark.textFile("Crime_Data_from_2020.csv") \
+crimes2 = spark.textFile("hdfs://master:9000/home/user/project2024/crime_data_2020_present.csv") \
             .map(custom_csv_split)
 
 crimes_rdd = crimes1.union(crimes2)
