@@ -68,17 +68,17 @@ LAPD_schema = StructType([
 crimes_df1 = spark.read.format('csv') \
     .options(header=False, inferSchema=False, skipFirstRow=True) \
     .schema(crimes_schema) \
-    .load("Crime_Data_from_2010.csv")
+    .load("hdfs://master:9000/home/user/project2024/crime_data_2010_2019.csv")
 
 crimes_df2 = spark.read.format('csv') \
     .options(header=False, inferSchema=False, skipFirstRow=True) \
     .schema(crimes_schema) \
-    .load("Crime_Data_from_2020.csv")
+    .load("hdfs://master:9000/home/user/project2024/crime_data_2020_present.csv")
 
 LAPD_df = spark.read.format('csv') \
     .options(header=True, inferSchema=False) \
     .schema(LAPD_schema) \
-    .load("LAPD_Police_Stations_new.csv")
+    .load("hdfs://master:9000/home/user/project2024/LAPD_Police_Stations_new.csv")
 
 crime_df = crimes_df1.union(crimes_df2)
 
