@@ -100,7 +100,7 @@ joined_df = joined_df.withColumn("distance", get_distance(joined_df["LAT"], join
 print(joined_df.show(21))
 data = joined_df.collect()
 
-with open("Q4_RDD.txt", 'w') as new_file:
+with open("Q4_Dataframe.txt", 'w') as new_file:
     for d in data:
         resdata = ""
         for x in d:
