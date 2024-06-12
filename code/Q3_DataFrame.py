@@ -102,7 +102,7 @@ joined_df = crimes_2015_df.join(geocoding_df, on=["LAT", "LON"], how="inner") \
                 .when(col("Vict Descent") == "X", "Unknown")
                 )
 
-top_3_income = joined_df.join(income_df, joined_df["code"] == income_df['Zip Code'], how="left_semi") \
+top_3_income = income_df.join(joined_df, joined_df["code"] == income_df['Zip Code'], how="left_semi") \
     .orderBy(col("Estimated Median Income").desc()).limit(3).select("Zip Code")
 
 bottom_3_income = income_df.join(joined_df, joined_df["code"] == income_df['Zip Code'], how="left_semi") \
