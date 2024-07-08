@@ -5,3 +5,14 @@ This project involves the analysis of large datasets using data science techniqu
 * To familiarize with and develop skills in installing and managing distributed systems Apache Spark and Apache Hadoop.
 * To use modern techniques through Spark's APIs for large-scale data analysis.
 * To understand the capabilities and limitations of these tools in relation to available resources and chosen configurations.
+
+## Datasets
+Primary Dataset
+Los Angeles Crime Data: This dataset contains crime records for Los Angeles from 2010 to the present. The data is available in CSV format from the following links:
+
+Crime Data from 2010 to 2019
+Crime Data from 2020 to Present
+Additional descriptions and related datasets can be found here:
+
+Crime Data from 2010 to 2019 (Description)
+Crime Data from 2020 to Present (Description)
