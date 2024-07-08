@@ -2,6 +2,8 @@
 ## Project Description
 This project involves the analysis of large datasets using data science techniques and tools. The primary tools utilized in this project are Apache Hadoop and Apache Spark. The aim of this project is to develop skills in installing, managing, and utilizing these distributed systems for large-scale data analysis.
 
+For more details, refer to assignment.pdf.
+
 ## Objectives
 * To familiarize with and develop skills in installing and managing distributed systems Apache Spark and Apache Hadoop.
 * To use modern techniques through Spark's APIs for large-scale data analysis.
