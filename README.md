@@ -30,6 +30,6 @@ Los Angeles Crime Data: This dataset contains crime records for Los Angeles from
 
    - Download from http://www.dblab.ece.ntua.gr/files/classes/data.tar.gz
      
-<br><br><br><br>
+<br><br>
 
-**All outputs, results, and answers related to the assignment can be found in the report.pdf file.**
+## All outputs, results, and answers related to the assignment can be found in the report.pdf file.**
