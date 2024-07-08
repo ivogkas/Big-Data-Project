@@ -28,6 +28,6 @@ Los Angeles Crime Data: This dataset contains crime records for Los Angeles from
      
 3. **Reverse Geocoding Dataset**: This dataset is crucial for mapping coordinates (latitude, longitude) to ZIP Codes within Los Angeles.
 
-   - [Reverse Geocoding Dataset] http://www.dblab.ece.ntua.gr/files/classes/data.tar.gz
+   - Download from http://www.dblab.ece.ntua.gr/files/classes/data.tar.gz
 
  
