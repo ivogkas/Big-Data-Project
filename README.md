@@ -2,7 +2,7 @@
 ## Project Description
 Team project for the Masters' degree course «Large Scale Data Management Systems» (2024). This project involves the analysis of large datasets using data science techniques and tools. The primary tools utilized in this project are Apache Hadoop and Apache Spark. The aim of this project is to develop skills in installing, managing, and utilizing these distributed systems for large-scale data analysis.
 
-For more details, refer to project.pdf.
+For more details, refer to project.pdf file.
 
 ## Objectives
 * To familiarize with and develop skills in installing and managing distributed systems Apache Spark and Apache Hadoop.
@@ -31,4 +31,4 @@ Los Angeles Crime Data: This dataset contains crime records for Los Angeles from
    - Download from http://www.dblab.ece.ntua.gr/files/classes/data.tar.gz
 
 
-All outputs, results, and answers related to the assignment can be found in the report.pdf file.
+**All outputs, results, and answers related to the assignment can be found in the report.pdf file.**
