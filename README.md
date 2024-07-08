@@ -27,6 +27,4 @@ Los Angeles Crime Data: This dataset contains crime records for Los Angeles from
    - [2019 Income Data](http://www.laalmanac.com/employment/em12c_2019.php)
    - [2021 Income Data](http://www.laalmanac.com/employment/em12c.php)
 
-   For convenience, all datasets have been collected and are available here:
-
-   - [Consolidated Data](http://www.dblab.ece.ntua.gr/files/classes/data.tar.gz)
+ 
