@@ -32,4 +32,4 @@ Los Angeles Crime Data: This dataset contains crime records for Los Angeles from
      
 <br><br>
 
-## All outputs, results, and answers related to the assignment can be found in the report.pdf file.**
+**All outputs, results, and answers related to the assignment can be found in the report.pdf file.**
